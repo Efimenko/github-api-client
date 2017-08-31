@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import {Search} from './components/search'
-import CardList from './components/card-list'
+import {CardList} from './components/card-list'
 import Dialog from './components/dialog'
-import {ParseLink} from './util/parse-link'
+import {parseLink} from './util/parse-link'
 import _ from 'lodash'
 
 import "./styles/style.scss";
@@ -35,17 +35,6 @@ class App extends Component {
     }
   }
 
-  saveRepos = (user, repositories, lastPage, page) => {
-    const repos = user !== this.state.currentUser ? repositories : this.state.repositories.concat(repositories)
-
-    this.setState({
-      currentUser: user,
-      repositories: repos,
-      page: page + 1,
-      lastPage: lastPage,
-    })
-  }
-
   getDialogNode = (node) => {
     this.dialogWrapper = node
   }
@@ -62,13 +51,22 @@ class App extends Component {
     fetch(`https://api.github.com/users/${user}/repos?page=${page+1}`)
       .then((response) => {
         const lastPage = response.headers.get('Link')
-          ? parseInt(ParseLink(response.headers.get('Link')).last.split('=')[1])
+          ? parseInt(parseLink(response.headers.get('Link')).last.split('=')[1])
           : 1
 
         return Promise.all([response.json(), lastPage])
       })
       .then(([repositories, lastPage]) => {
-          this.saveRepos(user, repositories, lastPage, page)
+          const repos = user !== this.state.currentUser
+            ? repositories
+            : this.state.repositories.concat(repositories)
+
+          this.setState({
+            currentUser: user,
+            repositories: repos,
+            page: page + 1,
+            lastPage: lastPage,
+          })
       })
       .catch((e) => {console.log(e)});
   }
@@ -86,7 +84,7 @@ class App extends Component {
   render() {
     const {repositories, currentUser, activeRepository, openDialog, lastPage, page} = this.state
     return (
-      <div className={openDialog && "is-croped"}>
+      <div>
         <Search getSearch={this.getSearchNode}
                 onSubmit={this.submitForm} />
         {repositories.length !== 0 &&
@@ -98,16 +96,17 @@ class App extends Component {
                 getDialog={this.getDialogNode}
                 openDialog={openDialog}
                 updateDialogState={this.updateDialogState} />
-                <div className="load-more">
+
         {lastPage !== page &&
-          <button
-            type="button"
-            className="btn load-more__btn"
-            onClick={() => this.loadRepositories(currentUser, page)}>
-            Load more
-          </button>
+          <div className="load-more">
+            <button
+              type="button"
+              className="btn load-more__btn"
+              onClick={() => this.loadRepositories(currentUser, page)}>
+              Load more
+            </button>
+          </div>
         }
-        </div>
       </div>
     );
   }

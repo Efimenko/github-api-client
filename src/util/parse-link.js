@@ -1,4 +1,4 @@
-export const ParseLink = (header) => {
+export const parseLink = (header) => {
     if (header.length === 0) {
         throw new Error("input must not be of zero length");
     }
