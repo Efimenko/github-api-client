@@ -22,9 +22,18 @@ export default class Dialog extends Component {
     })
   }
 
+  closest = (node, parent) => {
+    while (node) {
+      if (node === parent) return node;
+      else node = node.parentElement;
+    }
+    return null;
+  }
+
   closeDialog = (e) => {
-    // this.setState({parent: [], contributors: [], languages: {}, pulls: []})
-    this.props.updateDialogState()
+    if (this.closest(e.target, this.closeBtn) || !this.closest(e.target, this.dialogInner)) {
+      this.props.updateDialogState()
+    }
   }
 
   loadRepoInfo = (currentUser, name, fork) => {
@@ -42,8 +51,19 @@ export default class Dialog extends Component {
     }
   }
 
+  keyDownEvent = null
+
   componentDidMount() {
     this.props.getDialog(this.dialogWrapper)
+    this.keyDownEvent = document.addEventListener('keydown', (e) => {
+      if (e.key === "Escape" && this.props.openDialog) {
+        this.props.updateDialogState()
+      }
+    })
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.keyDownEvent)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -76,11 +96,15 @@ export default class Dialog extends Component {
     const {loading, parent, contributors, languages, pulls} = this.state
     return (
       <dialog className="dialog"
-            ref={ref => this.dialogWrapper = ref}>
+            ref={ref => this.dialogWrapper = ref}
+            onClick={this.closeDialog}>
         {loading
           ? <div>loading...</div>
-          : <div className="dialog__inner">
-              <button type="button" className="dialog__close" title="Close" onClick={this.closeDialog}>
+          : <div className="dialog__inner" ref={ref => this.dialogInner = ref}>
+              <button type="button"
+                      className="dialog__close"
+                      title="Close"
+                      ref={ref => this.closeBtn = ref}>
                 <Icon name="close"/>
               </button>
               <div className="dialog__scroll">

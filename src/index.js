@@ -40,7 +40,11 @@ class App extends Component {
   }
 
   openDialog = (id) => {
-    this.setState({activeRepository: _.find(this.state.repositories, {id: id})})
+    if (!this.state.activeRepository || id !== this.state.activeRepository.id) {
+      this.setState({activeRepository: _.find(this.state.repositories, {id: id})})
+    } else {
+      this.updateDialogState()
+    }
   }
 
   updateDialogState = () => {
