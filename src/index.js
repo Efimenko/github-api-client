@@ -46,7 +46,7 @@ class App extends Component {
   }
 
   openDialog = (id) => {
-    this.updateDialogState()
+    // this.updateDialogState()
     this.setState({activeRepository: _.find(this.state.repositories, {id: id})})
   }
 
@@ -83,7 +83,7 @@ class App extends Component {
   componentWillUpdate(nextProps, nextState) {
     if(nextState.openDialog !== this.state.openDialog) {
       if(nextState.openDialog) {
-        setTimeout(() => this.dialogWrapper.showModal(), 100)
+        this.dialogWrapper.showModal()
       } else {
         this.dialogWrapper.close()
       }

@@ -1,9 +1,11 @@
 @import "../../styles/vars";
 
 .dialog {
-  position: relative;
+  position: fixed;
   width: 90%;
   max-width: 500px;
+  top: 50%;
+  transform: translateY(-50%);
   padding: 0;
   border: none;
   box-shadow: 0 0 5px 0 rgba(#000, .2);

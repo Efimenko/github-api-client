@@ -32,10 +32,12 @@ export default class Dialog extends Component {
     if(fork) {
       Promise.all(this.urls.map(this.fetchInfo)).then(([repoInfo, contributors, languages, pulls]) => {
         this.setState({parent: repoInfo.parent, contributors, languages, pulls, loading: false});
+        this.props.updateDialogState();
       })
     }else {
       Promise.all(this.urls.map(this.fetchInfo)).then(([contributors, languages, pulls]) => {
         this.setState({parent: [], contributors, languages, pulls, loading: false});
+        this.props.updateDialogState();
       })
     }
   }
@@ -69,6 +71,7 @@ export default class Dialog extends Component {
   }
 
   render() {
+    console.log('render');
     const {name, html_url} = this.props.activeRepository
     const {loading, parent, contributors, languages, pulls} = this.state
     return (
