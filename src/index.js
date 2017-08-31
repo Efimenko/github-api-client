@@ -13,14 +13,13 @@ require('webpack-svgstore-plugin/src/helpers/svgxhr')(__svg__);
 
 class App extends Component {
 
-  state ={
+  state = {
     currentUser: '',
     repositories: [],
     openDialog: false,
     nextPage: false,
     page: 0,
-    lastPage: 0,
-    needLastPage: true
+    lastPage: 0
   }
 
   getSearchNode = (node) => {
@@ -30,28 +29,21 @@ class App extends Component {
   submitForm = (e) => {
     e.preventDefault();
     const user = this.searchInput.value
-    const {currentUser, page} = this.state
+    const {currentUser} = this.state
     if (user && currentUser !== user) {
-      this.loadRepositories(user, page);
+      this.loadRepositories(user, 0);
     }
   }
 
-  saveRepos = (user, repositories, lastPage) => {
-    if(lastPage) {
-      this.setState({
-        currentUser: user,
-        repositories: this.state.repositories.concat(repositories),
-        page: this.state.page + 1,
-        lastPage: lastPage,
-        needLastPage: false
-      })
-    } else {
-      this.setState({
-        currentUser: user,
-        repositories: this.state.repositories.concat(repositories),
-        page: this.state.page + 1,
-      })
-    }
+  saveRepos = (user, repositories, lastPage, page) => {
+    const repos = user !== this.state.currentUser ? repositories : this.state.repositories.concat(repositories)
+
+    this.setState({
+      currentUser: user,
+      repositories: repos,
+      page: page + 1,
+      lastPage: lastPage,
+    })
   }
 
   getDialogNode = (node) => {
@@ -69,23 +61,14 @@ class App extends Component {
   loadRepositories = (user, page) => {
     fetch(`https://api.github.com/users/${user}/repos?page=${page+1}`)
       .then((response) => {
-        return response.json();
+        const lastPage = response.headers.get('Link')
+          ? parseInt(ParseLink(response.headers.get('Link')).last.split('=')[1])
+          : 1
+
+        return Promise.all([response.json(), lastPage])
       })
-      .then((repositories) => {
-        if (this.state.needLastPage) {
-          fetch(`https://api.github.com/users/${user}/repos`)
-            .then((response) => {
-              let lastPage = 1;
-              if(response.headers.get('Link') !== null) {
-                lastPage = parseInt(ParseLink(response.headers.get('Link')).last.split('=')[1])
-              }
-
-              this.saveRepos(user, repositories, lastPage)
-            })
-        }else {
-          this.saveRepos(user, repositories)
-        }
-
+      .then(([repositories, lastPage]) => {
+          this.saveRepos(user, repositories, lastPage, page)
       })
       .catch((e) => {console.log(e)});
   }
