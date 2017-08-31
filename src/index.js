@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
-import Search from './components/search'
+import {Search} from './components/search'
 import CardList from './components/card-list'
 import Dialog from './components/dialog'
 import {ParseLink} from './util/parse-link'
@@ -21,6 +21,19 @@ class App extends Component {
     page: 0,
     lastPage: 0,
     needLastPage: true
+  }
+
+  getSearchNode = (node) => {
+    this.searchInput = node
+  }
+
+  submitForm = (e) => {
+    e.preventDefault();
+    const user = this.searchInput.value
+    const {currentUser, page} = this.state
+    if (user && currentUser !== user) {
+      this.loadRepositories(user, page);
+    }
   }
 
   saveRepos = (user, repositories, lastPage) => {
@@ -46,7 +59,6 @@ class App extends Component {
   }
 
   openDialog = (id) => {
-    // this.updateDialogState()
     this.setState({activeRepository: _.find(this.state.repositories, {id: id})})
   }
 
@@ -65,11 +77,9 @@ class App extends Component {
             .then((response) => {
               let lastPage = 1;
               if(response.headers.get('Link') !== null) {
-                // console.log(response.headers.get('Link'));
                 lastPage = parseInt(ParseLink(response.headers.get('Link')).last.split('=')[1])
               }
 
-              // console.log(ParseLink(response.headers.get('Link')))
               this.saveRepos(user, repositories, lastPage)
             })
         }else {
@@ -94,10 +104,8 @@ class App extends Component {
     const {repositories, currentUser, activeRepository, openDialog, lastPage, page} = this.state
     return (
       <div className={openDialog && "is-croped"}>
-        <Search saveRepos={this.saveRepos}
-                currentUser={currentUser}
-                page={page}
-                loadRepositories={this.loadRepositories} />
+        <Search getSearch={this.getSearchNode}
+                onSubmit={this.submitForm} />
         {repositories.length !== 0 &&
           <CardList repos={repositories}
                     openDialog={this.openDialog} />
