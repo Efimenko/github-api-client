@@ -8,6 +8,11 @@ const API_URL = 'https://api.github.com'
 
 export default class DialogContainer extends Component {
 
+  constructor() {
+    super()
+    this.handleClose = this.closeByKey.bind(this)
+  }
+
   state = {
     loading: false,
     parent: {},
@@ -70,15 +75,17 @@ export default class DialogContainer extends Component {
     }
   }
 
-  keyDownEvent = null
+
+  closeByKey = (e) => {
+    e.preventDefault()
+    if (e.key === "Escape") {
+      this.dialog.close()
+      this.props.updateDialogState()
+    }
+  }
 
   componentDidMount() {
-    this.keyDownEvent = document.addEventListener('keydown', (e) => {
-      if (e.key === "Escape") {
-        this.dialog.close()
-        this.props.updateDialogState()
-      }
-    })
+    document.addEventListener('keydown', this.handleClose)
 
     const {name, fork} = this.props.activeRepository
     const currentUser = this.props.currentUser
@@ -86,17 +93,8 @@ export default class DialogContainer extends Component {
     this.loadRepoInfo(currentUser, name, fork)
   }
 
-  componentWillReceiveProps(nextProps) {
-    if(this.props.activeRepository.id !== nextProps.activeRepository.id) {
-      const {name, fork} = nextProps.activeRepository
-      const currentUser = nextProps.currentUser
-
-      this.loadRepoInfo(currentUser, name, fork)
-    }
-  }
-
   componentWillUnmount() {
-    document.removeEventListener('keydown', this.keyDownEvent)
+    document.removeEventListener('keydown', this.handleClose)
   }
 
   render() {
