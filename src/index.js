@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import {Search} from './components/search'
 import {CardList} from './components/card-list'
-import Dialog from './components/dialog'
+import DialogContainer from './components/dialog-container'
 import {parseLink} from './util/parse-link'
 import _ from 'lodash'
 
@@ -35,16 +35,15 @@ class App extends Component {
     }
   }
 
-  getDialogNode = (node) => {
-    this.dialogWrapper = node
-  }
+  // getDialogNode = (node) => {
+  //   this.dialogWrapper = node
+  // }
 
   openDialog = (id) => {
     if (!this.state.activeRepository || id !== this.state.activeRepository.id) {
       this.setState({activeRepository: _.find(this.state.repositories, {id: id})})
-    } else {
-      this.updateDialogState()
     }
+    this.updateDialogState()
   }
 
   updateDialogState = () => {
@@ -75,16 +74,6 @@ class App extends Component {
       .catch((e) => {console.log(e)});
   }
 
-  componentWillUpdate(nextProps, nextState) {
-    if(nextState.openDialog !== this.state.openDialog) {
-      if(nextState.openDialog) {
-        this.dialogWrapper.showModal()
-      } else {
-        this.dialogWrapper.close()
-      }
-    }
-  }
-
   render() {
     const {repositories, currentUser, activeRepository, openDialog, lastPage, page} = this.state
     return (
@@ -95,12 +84,11 @@ class App extends Component {
           <CardList repos={repositories}
                     openDialog={this.openDialog} />
         }
-        <Dialog activeRepository={activeRepository}
-                currentUser={currentUser}
-                getDialog={this.getDialogNode}
-                openDialog={openDialog}
-                updateDialogState={this.updateDialogState} />
-
+        {openDialog &&
+          <DialogContainer activeRepository={activeRepository}
+                           currentUser={currentUser}
+                           updateDialogState={this.updateDialogState}/>
+        }
         {lastPage !== page &&
           <div className="load-more">
             <button
