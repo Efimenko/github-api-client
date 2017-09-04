@@ -3,8 +3,9 @@ import ReactDOM from "react-dom";
 import {Search} from './components/search'
 import {CardList} from './components/card-list'
 import DialogContainer from './components/dialog-container'
+import {Filter} from './components/filter'
 import {parseLink} from './util/parse-link'
-import _ from 'lodash'
+import {pickBy} from './util/pick-by'
 
 import "./styles/style.scss";
 
@@ -19,7 +20,15 @@ class App extends Component {
     openDialog: false,
     nextPage: false,
     page: 0,
-    lastPage: 0
+    lastPage: 0,
+    filters: {
+      hasIssues: false,
+      hasTopics: false,
+      starsCount: '',
+      updateDate: '',
+      type: 'All',
+      language: 'All'
+    }
   }
 
   getSearchNode = (node) => {
@@ -35,13 +44,9 @@ class App extends Component {
     }
   }
 
-  // getDialogNode = (node) => {
-  //   this.dialogWrapper = node
-  // }
-
   openDialog = (id) => {
     if (!this.state.activeRepository || id !== this.state.activeRepository.id) {
-      this.setState({activeRepository: _.find(this.state.repositories, {id: id})})
+      this.setState({activeRepository: this.state.repositories.find(item => item.id === id )})
     }
     this.updateDialogState()
   }
@@ -51,12 +56,21 @@ class App extends Component {
   }
 
   loadRepositories = (user, page) => {
-    fetch(`https://api.github.com/users/${user}/repos?page=${page+1}`)
+    fetch(`https://api.github.com/users/${user}/repos?page=${page+1}&per_page=100`, {
+        headers: new Headers({
+          Accept: 'application/vnd.github.mercy-preview+json'
+        })
+      })
       .then((response) => {
-        const lastPage = response.headers.get('Link')
-          ? parseInt(parseLink(response.headers.get('Link')).last.split('=')[1])
-          : 1
-
+        const links = response.headers.get('Link')
+        let lastPage = this.state.lastPage
+        if (links !== null) {
+          if (parseLink(links).last) {
+            lastPage = parseInt(parseLink(links).last.split('=')[1].split('&')[0])
+          }
+        }else {
+          lastPage = 1
+        }
         return Promise.all([response.json(), lastPage])
       })
       .then(([repositories, lastPage]) => {
@@ -74,14 +88,54 @@ class App extends Component {
       .catch((e) => {console.log(e)});
   }
 
+  updateFiltersState = (key, value) => {
+    this.setState({filters: {...this.state.filters, [key]: value}})
+  }
+
+  languages = []
+
+  getFilterLanguages = (repositories) => {
+    if (repositories.length) {
+      repositories.map(item => {
+        if (item.language && !this.languages.includes(item.language)) {
+          this.languages.push(item.language)
+        }
+      })
+    }
+  }
+
+  filterRepositories = ({open_issues_count, topics, stargazers_count, pushed_at, fork, language}) => {
+    const actions = {
+      hasIssues: () => open_issues_count,
+      hasTopics: () => topics.length,
+      starsCount: value => stargazers_count >= value,
+      updateDate: value => new Date(pushed_at) >= new Date(value),
+      type: value => value === 'All' ? true : value === 'Forks' ? fork : !fork,
+      language: value => value === 'All' ? true : language === value
+    }
+
+    return Object.keys(pickBy(this.state.filters, value => value)).every(action =>
+      actions[action](this.state.filters[action])
+    )
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    this.getFilterLanguages(nextState.repositories)
+  }
+
   render() {
-    const {repositories, currentUser, activeRepository, openDialog, lastPage, page} = this.state
+    const {repositories, currentUser, activeRepository, openDialog, lastPage, page, filters} = this.state
+    const filteredRepositories = repositories.filter(this.filterRepositories)
+
     return (
       <div>
         <Search getSearch={this.getSearchNode}
                 onSubmit={this.submitForm} />
-        {repositories.length !== 0 &&
-          <CardList repos={repositories}
+        <Filter filters={filters}
+                languages={this.languages}
+                updateFiltersState={this.updateFiltersState}/>
+        {filteredRepositories.length !== 0 &&
+          <CardList repos={filteredRepositories}
                     openDialog={this.openDialog} />
         }
         {openDialog &&

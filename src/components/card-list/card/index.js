@@ -39,11 +39,13 @@ export const Card = ({id, name, fork, desc, language, langColor, stars, update, 
 }
 
 Card.propTypes = {
+  id: React.PropTypes.number,
   name: React.PropTypes.string,
   desc: React.PropTypes.string,
   language: React.PropTypes.string,
   langColor: React.PropTypes.string,
   stars: React.PropTypes.number,
   update: React.PropTypes.string,
-  openDialog: React.PropTypes.func
+  openDialog: React.PropTypes.func,
+  fork: React.PropTypes.bool
 }

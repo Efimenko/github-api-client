@@ -1,5 +1,4 @@
 import React from 'react'
-import _ from 'lodash'
 import { Icon } from '../../icon'
 
 import './dialog.scss'
@@ -69,14 +68,14 @@ export const Dialog = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {_.map(languages, (value, key) => {
-                    if (value >= 1024) {
-                      return (<tr key={key}>
-                        <td>{key}</td>
-                        <td>{parseInt(value / 1024)}Kb</td>
-                      </tr>)
-                    }
-                  })}
+                  {Object.keys(languages).map((key) => {
+                      if (languages[key] >= 1024) {
+                        return (<tr key={key}>
+                          <td>{key}</td>
+                          <td>{parseInt(languages[key] / 1024)}Kb</td>
+                        </tr>)
+                      }
+                    })}
                 </tbody>
               </table>
             </section>
