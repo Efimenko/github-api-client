@@ -1,0 +1,108 @@
+@import "vars";
+
+.label {
+  display: inline-flex;
+  font-size: 14px;
+  margin-right: 5px;
+  cursor: pointer;
+  &_offset {
+    &-left {
+      margin-right: 0;
+      margin-left: 5px;
+    }
+    &-bottom {
+      margin-bottom: 5px;
+    }
+  }
+}
+
+.field {
+  width: 100%;
+  height: 50px;
+  border-radius: 5px;
+  border: none;
+  padding-left: 16px;
+  padding-right: 16px;
+  background-color: #3b4148;
+  color: #fff;
+  transition: background-color .25s ease-in-out;
+  &:hover,
+  &:focus {
+    background-color: #434a52;
+  }
+  &::placeholder {
+    color: #697275;
+  }
+  &_sm {
+    height: 36px;
+    font-size: 13px;
+  }
+  &_inline {
+    width: auto;
+  }
+  &_date {
+    padding-right: 0;
+    &::-webkit-inner-spin-button {
+      display: none;
+    }
+    &::-webkit-calendar-picker-indicator {
+      opacity: 1;
+      padding: 13.7px 13.2px;
+      border-left: 1px solid $t-color;
+      cursor: pointer;
+      background-color: transparent;
+    }
+    &::-webkit-clear-button {
+      margin-right: 5px;
+      cursor: pointer;
+    }
+  }
+}
+
+.select {
+  width: 100%;
+  height: 50px;
+  border-radius: 5px;
+  border: none;
+  padding-left: 16px;
+  padding-right: 40px;
+  background-color: #3b4148;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color .25s ease-in-out;
+  &:hover,
+  &:focus {
+    background-color: #434a52;
+  }
+  &_sm {
+    height: 36px;
+    font-size: 13px;
+  }
+  &_inline {
+    width: auto;
+  }
+}
+
+.btn {
+  height: 50px;
+  line-height: 50px;
+  padding: 0 16px;
+  background-color: #000;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  transition: background-color .25s ease-in-out;
+  &:hover,
+  &:active,
+  &:focus {
+    background-color: rgba(#000, .85);
+  }
+}
+
+.fieldset {
+  border: 1px solid $primary-color;
+  margin-bottom: 10px;
+  &__legend {
+    font-size: 14px;
+  }
+}

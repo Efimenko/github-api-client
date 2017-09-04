@@ -17,6 +17,7 @@ class App extends Component {
 
   state = {
     currentUser: '',
+    loading: false,
     repositories: [],
     openDialog: false,
     nextPage: false,
@@ -61,6 +62,7 @@ class App extends Component {
   }
 
   loadRepositories = (user, page) => {
+    this.setState({loading: true})
     fetch(`https://api.github.com/users/${user}/repos?page=${page+1}&per_page=100`, {
         headers: new Headers({
           Accept: 'application/vnd.github.mercy-preview+json'
@@ -85,6 +87,7 @@ class App extends Component {
 
           this.setState({
             currentUser: user,
+            loading: false,
             repositories: repos,
             page: page + 1,
             lastPage: lastPage,
@@ -141,6 +144,18 @@ class App extends Component {
     }
   }
 
+  componentDidUpdate() {
+    if (this.main) {
+      this.main.addEventListener('wheel', e => {
+        if ((this.main.offsetHeight + this.main.scrollTop) >= this.cardsWrapper.offsetHeight) {
+          if (!this.state.loading && this.state.lastPage !== this.state.page) {
+            this.loadRepositories(this.state.currentUser, this.state.page)
+          }
+        }
+      })
+    }
+  }
+
   componentWillUpdate(nextProps, nextState) {
     this.getFilterLanguages(nextState.repositories)
   }
@@ -152,34 +167,36 @@ class App extends Component {
       filteredRepositories.reverse()
     }
     return (
-      <div>
-        <Search getSearch={this.getSearchNode}
-                onSubmit={this.submitForm} />
-        <Sorting sortBy={sort.by}
-                 sortOrder={sort.order}
-                 updateSortState={this.updateSortState}/>
-        <Filter filters={filters}
-                languages={this.languages}
-                updateFiltersState={this.updateFiltersState}/>
-        {filteredRepositories.length !== 0 &&
-          <CardList repos={filteredRepositories}
-                    openDialog={this.openDialog} />
-        }
-        {openDialog &&
-          <DialogContainer activeRepository={activeRepository}
-                           currentUser={currentUser}
-                           updateDialogState={this.updateDialogState}/>
-        }
-        {lastPage !== page &&
-          <div className="load-more">
-            <button
-              type="button"
-              className="btn load-more__btn"
-              onClick={() => this.loadRepositories(currentUser, page)}>
-              Load more
-            </button>
+      <div className="wrapper">
+        <header className="header">
+          <Search getSearch={this.getSearchNode}
+                  onSubmit={this.submitForm} />
+        </header>
+        <section className="content">
+          <div className="content__inner">
+          {filteredRepositories.length !== 0 &&
+            <Sorting sortBy={sort.by}
+                     sortOrder={sort.order}
+                     updateSortState={this.updateSortState}/>
+          }
+          {filteredRepositories.length !== 0 &&
+            <main className="main" ref={ref => this.main = ref}>
+              <section className="cards" ref={ref => this.cardsWrapper = ref}>
+                <CardList repos={filteredRepositories}
+                          openDialog={this.openDialog} />
+              </section>
+            </main>
+          }
           </div>
-        }
+          <Filter filters={filters}
+                  languages={this.languages}
+                  updateFiltersState={this.updateFiltersState}/>
+          {openDialog &&
+            <DialogContainer activeRepository={activeRepository}
+                             currentUser={currentUser}
+                             updateDialogState={this.updateDialogState}/>
+          }
+        </section>
       </div>
     );
   }
