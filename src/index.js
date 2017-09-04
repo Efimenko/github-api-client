@@ -4,6 +4,7 @@ import {Search} from './components/search'
 import {CardList} from './components/card-list'
 import DialogContainer from './components/dialog-container'
 import {Filter} from './components/filter'
+import {Sorting} from './components/sorting'
 import {parseLink} from './util/parse-link'
 import {pickBy} from './util/pick-by'
 
@@ -28,6 +29,10 @@ class App extends Component {
       updateDate: '',
       type: 'All',
       language: 'All'
+    },
+    sort: {
+      by: 'name',
+      order: 'asc'
     }
   }
 
@@ -92,6 +97,10 @@ class App extends Component {
     this.setState({filters: {...this.state.filters, [key]: value}})
   }
 
+  updateSortState = (key, value) => {
+    this.setState({sort: {...this.state.sort, [key]: value}})
+  }
+
   languages = []
 
   getFilterLanguages = (repositories) => {
@@ -119,18 +128,36 @@ class App extends Component {
     )
   }
 
+  sortRepositories = (prev, next) => {
+    const {by} = this.state.sort
+    if (by === 'name') {
+      if(prev[by].toUpperCase() < next[by].toUpperCase()) return -1
+      if(prev[by].toUpperCase() > next[by].toUpperCase()) return 1
+      return 0
+    }else {
+      if(prev[by] < next[by]) return -1
+      if(prev[by] > next[by]) return 1
+      return 0
+    }
+  }
+
   componentWillUpdate(nextProps, nextState) {
     this.getFilterLanguages(nextState.repositories)
   }
 
   render() {
-    const {repositories, currentUser, activeRepository, openDialog, lastPage, page, filters} = this.state
-    const filteredRepositories = repositories.filter(this.filterRepositories)
-
+    const {repositories, currentUser, activeRepository, openDialog, lastPage, page, filters, sort} = this.state
+    const filteredRepositories = repositories.filter(this.filterRepositories).sort(this.sortRepositories)
+    if (sort.order === 'desc') {
+      filteredRepositories.reverse()
+    }
     return (
       <div>
         <Search getSearch={this.getSearchNode}
                 onSubmit={this.submitForm} />
+        <Sorting sortBy={sort.by}
+                 sortOrder={sort.order}
+                 updateSortState={this.updateSortState}/>
         <Filter filters={filters}
                 languages={this.languages}
                 updateFiltersState={this.updateFiltersState}/>
