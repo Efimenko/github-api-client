@@ -146,7 +146,7 @@
     opacity: .6;
     animation: doubleBounce 2s infinite ease-in-out;
   }
-  .spinner::after {
+  &::after {
     animation-delay: -1s;
   }
   &-wrapper {
