@@ -33,11 +33,10 @@ module.exports = {
              modules: false,
              sourceMap: true
            }
-         },
-         {
+         }, {
            loader: 'sass-loader',
            options: {
-            sourceMap: true
+             sourceMap: true
            }
          }]
       })
@@ -52,7 +51,7 @@ module.exports = {
         ]
       },
       prefix: 'icon'
-    })
+    }),
     new webpack.optimize.UglifyJsPlugin({
       sourceMap: false,
       compress: {
