@@ -4,7 +4,7 @@ import {Icon} from './../icon'
 import './filter.scss'
 
 export const Filter = ({updateFiltersState, languages, filters, openFilter, openingFilter}) => (
-  <aside className={`content__aside ${openingFilter && 'is-open'}`}>
+  <aside className={`content__aside ${openingFilter ? 'is-open' : ''}`}>
     <button type="button"
             className="btn btn_sm btn_outline-primary content__aside-close"
             title="Close filters"

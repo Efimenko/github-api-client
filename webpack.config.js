@@ -91,13 +91,13 @@ module.exports = {
         ]
       },
       prefix: 'icon'
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: false,
-      compress: {
-        'drop_console': false,
-        unsafe: true
-      }
     })
+    // new webpack.optimize.UglifyJsPlugin({
+    //   sourceMap: false,
+    //   compress: {
+    //     'drop_console': false,
+    //     unsafe: true
+    //   }
+    // })
   ]
 }

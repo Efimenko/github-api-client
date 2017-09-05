@@ -30,7 +30,7 @@ export const Dialog = ({
           <h1 className="card__title">
             <a className="card__title-link" href={url} target="_blank">{name}</a>
           </h1>
-          {parent.length !== 0 &&
+          {Object.keys(parent).length !== 0 &&
             <small className="card__meta-item">
               Forked from&nbsp;
               <a href={parent.html_url} target="_blank">{parent.full_name}</a>

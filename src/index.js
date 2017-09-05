@@ -10,9 +10,6 @@ import {pickBy} from './util/pick-by'
 
 import "./styles/style.scss";
 
-const __svg__ = { path: './img/*.svg', name: 'images/sprite-[hash].svg' };
-require('webpack-svgstore-plugin/src/helpers/svgxhr')(__svg__);
-
 class App extends Component {
 
   state = {
@@ -159,12 +156,14 @@ class App extends Component {
 
   componentDidUpdate() {
     if (this.main) {
-      this.main.addEventListener('touchmove', e => {
-        if ((this.main.offsetHeight + this.main.scrollTop) >= this.cardsWrapper.offsetHeight) {
-          if (!this.state.loading && this.state.lastPage !== this.state.page) {
-            this.loadRepositories(this.state.currentUser, this.state.page)
+      ['scroll', 'wheel', 'touchmove'].forEach(e => {
+        this.main.addEventListener(e, () => {
+          if ((this.main.offsetHeight + this.main.scrollTop) >= this.cardsWrapper.offsetHeight) {
+            if (!this.state.loading && this.state.lastPage !== this.state.page) {
+              this.loadRepositories(this.state.currentUser, this.state.page)
+            }
           }
-        }
+        })
       })
     }
   }

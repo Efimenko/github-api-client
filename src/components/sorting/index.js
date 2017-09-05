@@ -16,7 +16,7 @@ export const Sorting = ({orderBy, sortOrder, updateSortState}) => (
         id="sorting-select"
         value={orderBy}
         onChange={e => updateSortState('by', e.target.value)}
-        className="select select_sm select_inline">
+        className="select select_sm select_inline sorting__select">
         {Object.keys(sortingTypes).map((item) => <option key={item} value={item}>{sortingTypes[item]}</option>)}
       </select>
     </div>
@@ -26,7 +26,7 @@ export const Sorting = ({orderBy, sortOrder, updateSortState}) => (
               id="ordering-select"
               value={sortOrder}
               onChange={e => updateSortState('order', e.target.value)}
-              className="select select_sm select_inline">
+              className="select select_sm select_inline sorting__select">
         <option value="asc">Ascending</option>
         <option value="desc">Descending</option>
       </select>
