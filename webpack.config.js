@@ -33,53 +33,14 @@ module.exports = {
              modules: false,
              sourceMap: true
            }
-         }, {
-           loader: 'postcss-loader',
-           options: {
-             sourceMap: true
-           }
-         }, {
+         },
+         {
            loader: 'sass-loader',
            options: {
             sourceMap: true
            }
          }]
       })
-    }, {
-      test: /\.(gif|png|jpe?g)$/i,
-      loaders: [
-        'file-loader?name=images/[name]-[hash].[ext]',
-        {
-          loader: 'image-webpack-loader',
-          query: {
-            mozjpeg: {
-              progressive: true
-            },
-            optipng: {
-              optimizationLevel: 7
-            },
-            gifsicle: {
-              interlaced: false
-            },
-            pngquant: {
-              quality: '65-90',
-              speed: 4
-            }
-          }
-        }
-      ]
-    }, {
-      test: /\.(eot|ttf|woff|woff2)/,
-      loader: 'file-loader',
-      query: {
-        name: 'fonts/[name].[ext]?[hash]'
-      }
-    }, {
-      test: /\.(docx|pdf)/,
-      loader: 'file-loader',
-      query: {
-        name: 'files/[name].[ext]?[hash]'
-      }
     }
   ]},
   plugins: [
@@ -92,12 +53,12 @@ module.exports = {
       },
       prefix: 'icon'
     })
-    // new webpack.optimize.UglifyJsPlugin({
-    //   sourceMap: false,
-    //   compress: {
-    //     'drop_console': false,
-    //     unsafe: true
-    //   }
-    // })
+    new webpack.optimize.UglifyJsPlugin({
+      sourceMap: false,
+      compress: {
+        'drop_console': false,
+        unsafe: true
+      }
+    })
   ]
 }
