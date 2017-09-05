@@ -1,9 +1,16 @@
 import React from 'react'
+import {Icon} from './../icon'
 
 import './filter.scss'
 
-export const Filter = ({updateFiltersState, languages, filters}) => (
-  <aside className="content__aside">
+export const Filter = ({updateFiltersState, languages, filters, openFilter, openingFilter}) => (
+  <aside className={`content__aside ${openingFilter && 'is-open'}`}>
+    <button type="button"
+            className="btn btn_sm btn_outline-primary content__aside-close"
+            title="Close filters"
+            onClick={openFilter}>
+      <Icon name="close"/>
+    </button>
     <div className="content__aside-inner">
       <div className="filters">
         <div className="filters__item">

@@ -6,6 +6,10 @@
   padding: 20px 10px 10px;
   margin-bottom: 10px;
   background-color: $primary-color;
+  @media (max-width: 600px) {
+    padding-top: 10px;
+    padding-bottom: 0;
+  }
   &__label {
     width: 60px;
   }

@@ -23,6 +23,7 @@ class App extends Component {
     nextPage: false,
     page: 0,
     lastPage: 0,
+    openingFilter: false,
     filters: {
       hasIssues: false,
       hasTopics: false,
@@ -104,6 +105,10 @@ class App extends Component {
     this.setState({sort: {...this.state.sort, [key]: value}})
   }
 
+  updateLoadingState = () => {
+    this.setState({loading: !this.state.loading})
+  }
+
   languages = []
 
   getFilterLanguages = (repositories) => {
@@ -131,6 +136,10 @@ class App extends Component {
     )
   }
 
+  openFilter = () => {
+    this.setState({openingFilter: !this.state.openingFilter})
+  }
+
   sortRepositories = (prev, next) => {
     const {by} = this.state.sort
     if (by === 'name') {
@@ -144,9 +153,13 @@ class App extends Component {
     }
   }
 
+  componentDidMount() {
+    this.setState({firstLoading: false})
+  }
+
   componentDidUpdate() {
     if (this.main) {
-      this.main.addEventListener('wheel', e => {
+      this.main.addEventListener('touchmove', e => {
         if ((this.main.offsetHeight + this.main.scrollTop) >= this.cardsWrapper.offsetHeight) {
           if (!this.state.loading && this.state.lastPage !== this.state.page) {
             this.loadRepositories(this.state.currentUser, this.state.page)
@@ -161,7 +174,7 @@ class App extends Component {
   }
 
   render() {
-    const {repositories, currentUser, activeRepository, openDialog, lastPage, page, filters, sort} = this.state
+    const {repositories, currentUser, activeRepository, openDialog, lastPage, page, filters, sort, loading, openingFilter} = this.state
     const filteredRepositories = repositories.filter(this.filterRepositories).sort(this.sortRepositories)
     if (sort.order === 'desc') {
       filteredRepositories.reverse()
@@ -171,30 +184,43 @@ class App extends Component {
         <header className="header">
           <Search getSearch={this.getSearchNode}
                   onSubmit={this.submitForm} />
+          <button className="btn btn_sm btn_full header__btn"
+                  type="button"
+                  onClick={this.openFilter}>
+                  Open filters
+          </button>
         </header>
         <section className="content">
           <div className="content__inner">
-          {filteredRepositories.length !== 0 &&
-            <Sorting sortBy={sort.by}
-                     sortOrder={sort.order}
-                     updateSortState={this.updateSortState}/>
-          }
-          {filteredRepositories.length !== 0 &&
-            <main className="main" ref={ref => this.main = ref}>
-              <section className="cards" ref={ref => this.cardsWrapper = ref}>
-                <CardList repos={filteredRepositories}
-                          openDialog={this.openDialog} />
-              </section>
-            </main>
-          }
+            {loading &&
+              <div className="spinner-wrapper">
+                <div className="spinner" aria-busy="true" aria-live="polite" aria-label="Don't refresh the page"/>
+              </div>
+            }
+            {filteredRepositories.length !== 0 &&
+              <Sorting sortBy={sort.by}
+                       sortOrder={sort.order}
+                       updateSortState={this.updateSortState}/>
+            }
+            {filteredRepositories.length !== 0 &&
+              <main className="main" ref={ref => this.main = ref}>
+                <section className="cards" ref={ref => this.cardsWrapper = ref}>
+                  <CardList repos={filteredRepositories}
+                            openDialog={this.openDialog} />
+                </section>
+              </main>
+            }
           </div>
           <Filter filters={filters}
                   languages={this.languages}
-                  updateFiltersState={this.updateFiltersState}/>
+                  updateFiltersState={this.updateFiltersState}
+                  openFilter={this.openFilter}
+                  openingFilter={openingFilter}/>
           {openDialog &&
             <DialogContainer activeRepository={activeRepository}
                              currentUser={currentUser}
-                             updateDialogState={this.updateDialogState}/>
+                             updateDialogState={this.updateDialogState}
+                             updateLoading={this.updateLoadingState}/>
           }
         </section>
       </div>

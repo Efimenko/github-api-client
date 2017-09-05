@@ -26,7 +26,8 @@ input {
   font-family: inherit;
 }
 
-[type="checkbox"] {
+[type="checkbox"],
+[type="radio"] {
   cursor: pointer;
 }
 
@@ -48,6 +49,14 @@ a {
 .header {
   padding: 10px;
   border-bottom: 1px solid $primary-color;
+  &__btn {
+    display: none;
+    height: 40px;
+    margin-top: 10px;
+    @media (max-width: 600px) {
+      display: block;
+    }
+  }
 }
 
 .content {
@@ -71,17 +80,41 @@ a {
       padding: 10px;
       max-width: initial;
       background-color: $bg-color;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .3s ease-in;
+      @media (max-width: 600px) {
+        padding-top: 50px;
+      }
+    }
+    &.is-open {
+      opacity: 1;
+      visibility: visible;
     }
     &-inner {
       width: 100%;
       overflow: auto;
     }
+    &-close {
+      display: none;
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      @media (max-width: 600px) {
+        display: block;
+      }
+      .c-icon {
+        max-width: 16px;
+      }
+    }
   }
   &__inner {
     display: flex;
+    position: relative;
     flex-direction: column;
     flex: 1;
     min-width: 400px;
+    padding-bottom: 5px;
   }
 }
 

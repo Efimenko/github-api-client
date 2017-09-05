@@ -14,7 +14,6 @@ export default class DialogContainer extends Component {
   }
 
   state = {
-    loading: false,
     parent: {},
     contributors: [],
     languages: {},
@@ -47,7 +46,7 @@ export default class DialogContainer extends Component {
   }
 
   loadRepoInfo = (currentUser, name, fork) => {
-    this.setState({loading: true})
+    this.props.updateLoading()
 
     if (fork) {
       const urls = [
@@ -69,7 +68,8 @@ export default class DialogContainer extends Component {
       ]
 
       Promise.all(urls.map(this.fetchInfo)).then(([contributors, languages, pulls]) => {
-        this.setState({parent: {}, contributors, languages, pulls, loading: false});
+        this.setState({parent: {}, contributors, languages, pulls});
+        this.props.updateLoading()
         this.dialog.showModal()
       })
     }

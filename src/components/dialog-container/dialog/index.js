@@ -20,7 +20,7 @@ export const Dialog = ({
         onClick={closeDialog}>
   <div className="dialog__inner" ref={ref => getDialogInner(ref)}>
       <button type="button"
-              className="dialog__close"
+              className="btn btn_sm btn_outline-primary dialog__close"
               title="Close"
               ref={ref => getDialogCloseBtn(ref)}>
         <Icon name="close"/>

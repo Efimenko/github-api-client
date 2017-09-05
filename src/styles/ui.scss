@@ -33,6 +33,9 @@
   &::placeholder {
     color: #697275;
   }
+  &:invalid {
+    box-shadow: none;
+  }
   &_sm {
     height: 36px;
     font-size: 13px;
@@ -85,17 +88,35 @@
 
 .btn {
   height: 50px;
-  line-height: 50px;
-  padding: 0 16px;
+  padding: 16px;
   background-color: #000;
   border: none;
   cursor: pointer;
   color: #fff;
-  transition: background-color .25s ease-in-out;
+  transition: color .25s ease-in-out, background-color .25s ease-in-out, border-color .25s ease-in-out;
   &:hover,
   &:active,
   &:focus {
     background-color: rgba(#000, .85);
+  }
+  &_sm {
+    height: 30px;
+    padding: 6px;
+    font-size: 13px;
+  }
+  &_outline-primary {
+    background-color: #fff;
+    color: $primary-color;
+    border: 1px solid currentColor;
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: #fff;
+      color: darken($primary-color, 10%);
+    }
+  }
+  &_full {
+    width: 100%;
   }
 }
 
@@ -104,5 +125,47 @@
   margin-bottom: 10px;
   &__legend {
     font-size: 14px;
+  }
+}
+
+.spinner {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  top: 50%;
+  left: 50%;
+  margin-top: -20px;
+  margin-left: -20px;
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #000;
+    opacity: .6;
+    animation: doubleBounce 2s infinite ease-in-out;
+  }
+  .spinner::after {
+    animation-delay: -1s;
+  }
+  &-wrapper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, .1);
+  }
+}
+
+@keyframes doubleBounce {
+  0%,
+  100% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1);
   }
 }
