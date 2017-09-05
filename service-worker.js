@@ -1,6 +1,7 @@
 var CACHE = 'network-or-cache-v1';
 
 var cacheFiles = [
+	'./',
 	'index.html',
 	'bundle.js',
 	'style.css',
