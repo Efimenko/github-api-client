@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="theme-color" content="#000">
     <title>Github lite</title>
     <link rel="stylesheet" href="./style.css">
     <style>
@@ -33,6 +34,19 @@
       .spinner::after {
         animation-delay: -1s;
       }
+      .no-script {
+        display: flex;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 10px;
+        background-color: #fff;
+      }
       @keyframes doubleBounce {
         0%,
         100% {
@@ -51,6 +65,11 @@
         </div>
       </div>
     </div>
+    <noscript>
+      <div class="no-script">
+        For correct work of application, enable JavaScript and reload the page.
+      </div>
+    </noscript>
     <script src="bundle.js"></script>
   </body>
 </html>

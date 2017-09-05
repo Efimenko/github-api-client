@@ -41,7 +41,13 @@ export default class DialogContainer extends Component {
 
   fetchInfo = (link) => {
     return fetch(link).then((response) => {
+      if (response.status === 404 || response.status === 403) {
+        return Promise.reject([])
+      }
       return response.json();
+    })
+    .catch((e) => {
+      this.props.showError('Load error')
     })
   }
 
@@ -57,8 +63,11 @@ export default class DialogContainer extends Component {
       ]
 
       Promise.all(urls.map(this.fetchInfo)).then(([repoInfo, contributors, languages, pulls]) => {
-        this.setState({parent: repoInfo.parent, contributors, languages, pulls, loading: false});
-        this.dialog.showModal()
+        if (contributors) {
+          this.setState({parent: repoInfo.parent, contributors, languages, pulls, loading: false});
+          this.props.updateLoading()
+          this.dialog.showModal()
+        }
       })
     }else {
       const urls = [
@@ -68,9 +77,11 @@ export default class DialogContainer extends Component {
       ]
 
       Promise.all(urls.map(this.fetchInfo)).then(([contributors, languages, pulls]) => {
-        this.setState({parent: {}, contributors, languages, pulls});
-        this.props.updateLoading()
-        this.dialog.showModal()
+        if (contributors) {
+          this.setState({parent: {}, contributors, languages, pulls});
+          this.props.updateLoading()
+          this.dialog.showModal()
+        }
       })
     }
   }

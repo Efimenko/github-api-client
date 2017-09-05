@@ -8,8 +8,6 @@ export const calcDate = (date) => {
   delta.minutes = Math.floor(delta.days * 24 * 60)
   delta.seconds = Math.floor(delta.days * 24 * 60 * 60)
 
-  console.log(delta);
-
   if (delta.seconds <= 60 && delta.seconds >= 1) {
     return delta.seconds === 1 ? `${delta.seconds} second ago` : `${delta.seconds} seconds ago`
   } else if (delta.minutes <= 60 && delta.minutes >= 1) {

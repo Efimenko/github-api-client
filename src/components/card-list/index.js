@@ -8,7 +8,6 @@ import './card-list.scss'
 export const CardList = ({repos, openDialog}) => (
   <div className="cards__inner">
     {repos.map(({id, name, description, language, stargazers_count, pushed_at, fork}) => {
-      // console.log(calcDate(pushed_at));
       return (
         <Card
           id={id}

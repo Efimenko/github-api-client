@@ -5,6 +5,7 @@ import {CardList} from './components/card-list'
 import DialogContainer from './components/dialog-container'
 import {Filter} from './components/filter'
 import {Sorting} from './components/sorting'
+import {Notify} from './components/notify'
 import {parseLink} from './util/parse-link'
 import {pickBy} from './util/pick-by'
 
@@ -32,7 +33,9 @@ class App extends Component {
     sort: {
       by: 'name',
       order: 'asc'
-    }
+    },
+    error: false,
+    notify: false
   }
 
   getSearchNode = (node) => {
@@ -67,6 +70,9 @@ class App extends Component {
         })
       })
       .then((response) => {
+        if (response.status === 404 || response.status === 403) {
+          return Promise.reject()
+        }
         const links = response.headers.get('Link')
         let lastPage = this.state.lastPage
         if (links !== null) {
@@ -91,7 +97,7 @@ class App extends Component {
             lastPage: lastPage,
           })
       })
-      .catch((e) => {console.log(e)});
+      .catch((e) => this.setState({error: 'Load error', loading: false}));
   }
 
   updateFiltersState = (key, value) => {
@@ -150,11 +156,18 @@ class App extends Component {
     }
   }
 
+  showError = (error) => {
+    this.setState({error: error, loading: false})
+  }
+
   componentDidMount() {
-    this.setState({firstLoading: false})
+    window.addEventListener('offline', () => this.setState({notify: 'Check internet conection'}));
   }
 
   componentDidUpdate() {
+    if (this.state.error || this.state.notify) {
+      setTimeout(() => this.setState({error: false, notify: false}), 4000)
+    }
     if (this.main) {
       ['scroll', 'wheel', 'touchmove'].forEach(e => {
         this.main.addEventListener(e, () => {
@@ -173,13 +186,29 @@ class App extends Component {
   }
 
   render() {
-    const {repositories, currentUser, activeRepository, openDialog, lastPage, page, filters, sort, loading, openingFilter} = this.state
+    const {
+      repositories,
+      currentUser,
+      activeRepository,
+      openDialog,
+      lastPage,
+      page,
+      filters,
+      sort,
+      loading,
+      openingFilter,
+      error,
+      notify
+    } = this.state
     const filteredRepositories = repositories.filter(this.filterRepositories).sort(this.sortRepositories)
     if (sort.order === 'desc') {
       filteredRepositories.reverse()
     }
     return (
       <div className="wrapper">
+        {(error !== false || notify !== false) &&
+          <Notify error={error} notify={notify}/>
+        }
         <header className="header">
           <Search getSearch={this.getSearchNode}
                   onSubmit={this.submitForm} />
@@ -219,7 +248,8 @@ class App extends Component {
             <DialogContainer activeRepository={activeRepository}
                              currentUser={currentUser}
                              updateDialogState={this.updateDialogState}
-                             updateLoading={this.updateLoadingState}/>
+                             updateLoading={this.updateLoadingState}
+                             showError={this.showError}/>
           }
         </section>
       </div>
