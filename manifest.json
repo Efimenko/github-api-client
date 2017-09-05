@@ -1,6 +1,6 @@
 {
   "name": "Lite Github Client",
-  "short_name": "Lite_Github_Client",
+  "short_name": "Lite_Github",
   "start_url": "./",
   "display": "standalone",
   "orientation": "portrait",
