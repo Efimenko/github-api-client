@@ -1,23 +1,21 @@
 var CACHE = 'network-or-cache-v1';
 
-var cacheFiles = [
-	'./',
-	'index.html',
-	'bundle.js',
-	'style.css',
-	'manifest.json'
-]
-
-self.addEventListener('install', function(evt) {
-	evt.waitUntil(precache());
-})
-
-function precache() {
-	return caches.open(CACHE)
-		.then(function(cache){
-			cache.addAll(cacheFiles);
-		})
-}
+// var cacheFiles = [
+// 	'./index.html',
+// 	'./bundle.js',
+// 	'./style.css'
+// ]
+//
+// self.addEventListener('install', function(evt) {
+// 	evt.waitUntil(precache());
+// })
+//
+// function precache() {
+// 	return caches.open(CACHE)
+// 		.then(function(cache){
+// 			cache.addAll(cacheFiles);
+// 		})
+// }
 
 self.addEventListener('fetch', event => {
   if (event.request.url.search('chrome-extension') === -1) {
