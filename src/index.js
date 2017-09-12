@@ -259,7 +259,7 @@ class App extends Component {
 
 ReactDOM.render(<App />, document.getElementById("app"));
 
-const SERVICE_WORKER_DIR = process.env.NODE_ENV === 'development' ? './' : 'github-api-client/'
+const SERVICE_WORKER_DIR = process.env.NODE_ENV === 'development' ? './' : ''
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register(`${SERVICE_WORKER_DIR}service-worker.js`)
